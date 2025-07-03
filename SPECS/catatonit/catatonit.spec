@@ -2,18 +2,18 @@ Vendor:         Microsoft Corporation
 Distribution:   Azure Linux
 
 Name: catatonit
-Version: 0.1.7
-Release: 19%{?dist}
+Version: 0.2.1
+Release: 1%{?dist}
 Summary: A signal-forwarding process manager for containers
-License: GPLv3+
+License: GPL-3.0-or-later
 URL: https://github.com/openSUSE/catatonit
 Source0: %{url}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: file
 BuildRequires: gcc
-BuildRequires: git
-BuildRequires: glibc-static >= 2.38-11%{?dist}
+BuildRequires: git-core
+BuildRequires: glibc-static
 BuildRequires: libtool
 BuildRequires: make
 
@@ -31,11 +31,11 @@ signalfd(2)) and has no additional features.
 
 %prep
 %autosetup -Sgit
-sed -i '$d' configure.ac
 
 %build
-autoreconf -fi
+./autogen.sh
 %configure
+CFLAGS="%{optflags} -fPIE -D_GNU_SOURCE -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE"
 %{__make} %{?_smp_mflags}
 
 # Make sure we *always* build a static binary. Otherwise we'll break containers
@@ -61,6 +61,9 @@ ln -s %{_libexecdir}/%{name}/%{name} %{buildroot}%{_libexecdir}/podman/%{name}
 %{_libexecdir}/podman/%{name}
 
 %changelog
+* Thu Jul 03 2025 Suresh Thelkar<sthelkar@microsoft.com> - 0.2.1-1
+- Update to 0.2.1, based on Fedora 41 spec file
+
 * Thu May 22 2025 Kanishk Bansal <kanbansal@microsoft.com> - 0.1.7-19
 - Bump to rebuild with updated glibc
 
